@@ -1,0 +1,79 @@
+from google.colab import files
+from IPython.display import Image
+import numpy as np
+from skimage import color, io, filters
+from matplotlib import pyplot as plt
+from skimage import measure
+from skimage import morphology
+
+uploaded = files.upload()
+path = 'shapes.png'
+img = io.imread(path)
+
+img_g = color.rgb2gray(img) 
+plt.imshow(img_g, cmap = plt.cm.gray) 
+
+mask = np.ones([3,3])
+img_median = filters.rank.median(img_g, mask)
+plt.imshow(img_median, cmap = plt.cm.gray)
+plt.show()
+
+tresh_global = 120
+image_bin = img_median.copy()
+image_bin[image_bin <tresh_global] = 0
+image_bin[image_bin >= tresh_global] = 1
+
+img_odw = 1 - image_bin
+
+plt.imshow(img_odw, cmap = plt.cm.gray)
+plt.show()
+
+img_ccl = measure.label(img_odw)
+plt.imshow(img_ccl,cmap=plt.cm.gray)
+
+labels = np.unique(img_ccl) 
+labels
+
+import matplotlib.patches as mpatches
+
+element1 = measure.regionprops(img_ccl) 
+minr1, minc1, maxr1, maxc1 = element[0]. bbox 
+rect1 = mpatches.Rectangle((minc1,minr1), maxc1 - minc1, maxr1 - minr1)
+fig1 = plt.figure(figsize = (5,5))
+elem1 = img_ccl[minr1:maxr1, minc1:maxc1]
+plt.imshow(elem1, cmap = plt.cm.gray)
+plt.show()
+
+element2 = measure.regionprops(img_ccl) 
+minr2, minc2, maxr2, maxc2 = element[1]. bbox 
+rect2 = mpatches.Rectangle((minc2,minr2), maxc2 - minc2, maxr2 - minr2)
+fig2 = plt.figure(figsize = (5,5))
+elem2 = img_ccl[minr2:maxr2, minc2:maxc2]
+plt.imshow(elem2, cmap = plt.cm.gray)
+plt.show()
+
+element3 = measure.regionprops(img_ccl) 
+minr3, minc3, maxr3, maxc3 = element[2]. bbox 
+rect3 = mpatches.Rectangle((minc3,minr3), maxc3 - minc3, maxr3 - minr3)
+fig3 = plt.figure(figsize = (5,5))
+elem3 = img_ccl[minr3:maxr3, minc3:maxc3]
+plt.imshow(elem3, cmap = plt.cm.gray)
+plt.show()
+
+elem1
+
+t = np.where(elem1 == 1)
+size1 = np.shape(t)
+size1[1]
+
+elem2
+
+t = np.where(elem2 == 0)
+size2 = np.shape(t)
+size2[1]
+
+elem3
+
+t = np.where(elem3 == 3)
+size3 = np.shape(t)
+size3[1]
