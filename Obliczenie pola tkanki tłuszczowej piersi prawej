@@ -1,0 +1,65 @@
+from google.colab import files
+from IPython.display import Image
+!pip install pydicom
+import pydicom as dcm
+import numpy as np
+from skimage import color, io, filters, measure, morphology
+from matplotlib import pyplot as plt
+import matplotlib.patches as mpatches
+
+uploaded = files.upload() 
+
+path = 'image_b_2.dcm'
+ds = dcm.read_file(path) 
+img = ds.pixel_array
+
+img_g = color.rgb2gray(img) 
+plt.imshow(img_g, cmap = plt.cm.gray) 
+plt.show()
+
+mask = np.ones([3,3]) 
+img_median = filters.rank.median(img_g, mask)
+plt.imshow(img_median, cmap = plt.cm.gray)
+plt.show()
+
+block_size = 101
+thresh_adaptive = filters.threshold_local(img_median, block_size, offset = 1) 
+img_adaptive = img_median > thresh_adaptive
+plt.imshow(img_adaptive, cmap = plt.cm.gray)
+plt.show()
+
+img_cut = img_adaptive[50:300, 100:310] 
+plt.imshow(img_cut, cmap = plt.cm.gray)
+plt.show()
+
+A=np.zeros([5,5]) 
+A[:,1]=1
+selem=A
+img_closed=morphology.binary_closing(img_cut, selem)
+plt.imshow(img_closed, cmap=plt.cm.gray)
+
+img_ccl = measure.label(img_cut)
+plt.imshow(img_ccl,cmap=plt.cm.gray)
+
+labels = np.unique(img_ccl) 
+labels
+
+element = measure.regionprops(img_ccl) 
+minr, minc, maxr, maxc = element[4]. bbox 
+rect = mpatches.Rectangle((minc,minr), maxc - minc, maxr - minr)
+fig = plt.figure(figsize = (5,5))
+
+elem = img_ccl[minr:maxr, minc:maxc]
+plt.imshow(elem, cmap = plt.cm.gray)
+plt.show()
+
+x = float(ds.PixelSpacing[0]) 
+y = float(ds.PixelSpacing[1]) 
+
+t = np.where(elem == 5)
+size = np.shape(t)
+size[1]
+
+area = size[1]* x * y 
+
+area
