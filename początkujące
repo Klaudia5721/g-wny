@@ -1,0 +1,5 @@
+git init
+git add project_folder
+git commit -m "Adding new Project"
+git remote add origin https://github.com/Klaudia5721/menu
+git push -u -f origin master
